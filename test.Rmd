@@ -1,0 +1,120 @@
+---
+title: "Course project"
+author: "K. Berezhinskiy"
+date: "22 марта 2016 г."
+output: html_document
+---
+
+Hello! Let's load some libraries!
+
+```{r results='hide',warning=FALSE, message=FALSE}
+library(caret)
+library (dplyr)
+library(ggplot2)
+```
+
+Now set up working directory, and load source files.
+
+```{r}
+setwd("C:/r/ML")
+Train = read.csv("pml-training.csv")
+Test<-read.csv("pml-testing.csv")
+```
+
+Let's look what is it
+
+```{r}
+data.frame(Test=names(Test),Train=names(Train))
+Test[1,]
+```
+
+and visualize
+
+```{r}
+qplot(Train$total_accel_belt,Train$classe)
+```
+
+Let's drop useless for prediction information, classe variable I will return later
+
+```{r}
+Train2<-Train[,-c(1:7,160)]
+Test2<-Test[,-c(1:7,160)]
+```
+
+Transform classes to numeric, cause it is rather strange to see obviously numeric variables in classes form
+
+```{r, echo=FALSE}
+for (i in names(Train2)){
+  if (is.numeric(Train2[,i])==TRUE) {next}
+  else{
+  Train2[,i]<-as.numeric(Train2[,i])}
+}
+
+for (i in names(Test2)){
+  if (is.numeric(Test2[,i])==TRUE) {next}
+  else{
+    Test2[,i]<-as.numeric(Test2[,i])}
+}
+```
+
+Looking for NA in test df (it's important for further prediction)
+
+```{r}
+x<-0
+i<-1
+for (i in c(1:152))
+{
+  if(is.na(Test2[1,i])==TRUE) {x[i]<-i;}
+}
+x<-x[!is.na(x)]
+x<-x[-1]
+x
+```
+
+clear Test&Train form useless for prediction NA variables
+
+```{r}
+Test3<-Test2[,-x]
+Train3<-Train2[,-x]
+```
+
+let's create train control function with default options (bootstrapping, p=0.75)
+
+```{r}
+tc<-trainControl()
+```
+
+I returned classe as I promised
+
+```{r}
+Train3<-mutate(Train3,classe=Train$classe)
+```
+
+Ctrl-enter and go to drink tea with cookies for 1 hour :)
+
+```{r}
+modFit1<-train(classe~.,method="rf",data=Train3,trControl=tc)
+
+```
+```{r}
+prd1<-predict(modFit1,Test3)
+prd0<-predict(modFit1,Train3)
+```
+
+**Prediction**
+
+```{r}
+prd1
+
+```
+
+**Self prediction**
+
+
+```{r}
+confusionMatrix(prd0,Train3$classe)
+```
+
+
+Thank you for attention!
+
