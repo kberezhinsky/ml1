@@ -21,7 +21,7 @@ Train = read.csv("pml-training.csv")
 Test<-read.csv("pml-testing.csv")
 ```
 
-Let's look what is it
+Let's look what it is
 
 ```{r}
 data.frame(Test=names(Test),Train=names(Train))
@@ -41,7 +41,7 @@ Train2<-Train[,-c(1:7,160)]
 Test2<-Test[,-c(1:7,160)]
 ```
 
-Transform classes to numeric, cause it is rather strange to see obviously numeric variables in classes form
+Transform classes to numeric, cause it is rather strange to see obviously numeric variables in classes 
 
 ```{r, echo=FALSE}
 for (i in names(Train2)){
@@ -57,7 +57,7 @@ for (i in names(Test2)){
 }
 ```
 
-Looking for NA in test df (it's important for further prediction)
+Looking for NA in test df 
 
 ```{r}
 x<-0
